@@ -59,10 +59,10 @@ def pdf_analyzer_orchestrator(context):
 
     # *************** RUN ACTIVITY FUNCTIONS IN PARALLEL ***************** #
     analysis_tasks = [
-        # context.call_activity("extract_text", input_data),
+        # context.call_activity("extract_text", input_data), uncomment when function implemented
         context.call_activity("extract_metadata", input_data),
-        # context.call_activity("analyze_statistics", input_data),
-        # context.call_activity("detect_sensitive_data", input_data),
+        # context.call_activity("analyze_statistics", input_data), uncomment when function implemented
+        # context.call_activity("detect_sensitive_data", input_data), uncomment when function implemented
     ]
 
     # *************** WAIT FOR ALL TASKS TO COMPLETE THEN START NEXT ACTIVITY ***************** #
@@ -79,9 +79,9 @@ def pdf_analyzer_orchestrator(context):
     report = yield context.call_activity("generate_report", report_input)
 
     # # ************** ARCHIVE RESULTS ************** #
-    # record = yield context.call_activity("store_results", report)
+    record = yield context.call_activity("store_results", report)
 
-    # return record
+    return record
 
 
 @app.activity_trigger(input_name="inputData")
@@ -96,7 +96,7 @@ def extract_metadata(inputData: dict):
         # normalize pdf date
         orig_date = metadata["creationDate"]
 
-        # strip D:
+        # strip "D:" from pdf date format
         modified_date = orig_date[2:]
         year = modified_date[:4]
         month = modified_date[4:6]
