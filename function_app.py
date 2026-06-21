@@ -68,12 +68,15 @@ def pdf_analyzer_orchestrator(context):
     # *************** WAIT FOR ALL TASKS TO COMPLETE THEN START NEXT ACTIVITY ***************** #
     results = yield context.task_all(analysis_tasks)
 
-    # report_input = {
-    #     # TODO: Shape Data
-    # }
+    report_input = {
+        "stats": "", # place analyze_statistics here
+        "metadata": results[1], # 2nd task in above analysis_tasks
+        "text": "", # place extract_text here
+        "sensitive_data": "", # place sensitive_data here
+    }
 
     # # ************** GENERATE REPORT ************** #
-    # report = yield context.call_activity("generate_report", report_input)
+    report = yield context.call_activity("generate_report", report_input)
 
     # # ************** ARCHIVE RESULTS ************** #
     # record = yield context.call_activity("store_results", report)
@@ -132,74 +135,66 @@ def detect_sensitive_data(inputData: dict):
     print()
     # TODO: write text extraction
 
-# =============================================================================
-# 7. ACTIVITY: Generate Report
-# =============================================================================
-# This activity takes the results from all 4 analyses and combines them
-# into a single unified report. This is the "reduce" step after the fan-in.
+
 @app.activity_trigger(input_name="reportData")
 def generate_report(reportData: dict):
-    logging.info("Generating combined report...")
+    logging.info("Starting Report Generation, Please Wait...")
 
     blob_name = reportData["blob_name"]
-    # Extract just the filename from the full path (e.g., "images/photo.jpg" -> "photo.jpg")
     filename = blob_name.split("/")[-1] if "/" in blob_name else blob_name
 
     report = {
         "id": str(uuid.uuid4()),
         "fileName": filename,
         "blobPath": blob_name,
-        "analyzedAt": datetime.utcnow().isoformat(),
-        "analyses": {
-            "colors": reportData["colors"],
-            "objects": reportData["objects"],
-            "text": reportData["text"],
+        "analyzed_on": datetime.now(datetime.timezone.utc).isoformat(),
+        "analysis": {
+            "statistics": reportData["stats"],
             "metadata": reportData["metadata"],
+            "text": reportData["text"],
+            "sensitive_data": reportData["sensitive_data"],
         },
         "summary": {
-            "imageSize": f"{reportData['metadata'].get('width', 0)}x{reportData['metadata'].get('height', 0)}",
             "format": reportData["metadata"].get("format", "Unknown"),
-            "dominantColor": reportData["colors"]["dominantColors"][0]["hex"] if reportData["colors"].get("dominantColors") else "N/A",
-            "objectsDetected": reportData["objects"].get("objectCount", 0),
+            "author": reportData["metadata"].get("author", "Unknown"),
             "hasText": reportData["text"].get("hasText", False),
-            "isGrayscale": reportData["colors"].get("isGrayscale", False),
         }
     }
 
-    logging.info(f"Report generated: {report['id']}")
+    logging.info(f"Analysis Report Id: {report['id']}")
     return report
 
 
 @app.activity_trigger(input_name="report")
 def store_results(report: dict):
-    logging.info(f"Storing results for {report['fileName']}...")
+    logging.info(f"Archiving {report['fileName']}...")
 
     try:
         table_client = get_table_client()
 
         entity = {
-            "PartitionKey": "ImageAnalysis",
+            "PartitionKey": "PdfAnalysis",
             "RowKey": report["id"],
             "FileName": report["fileName"],
             "BlobPath": report["blobPath"],
-            "AnalyzedAt": report["analyzedAt"],
+            "AnalyzedAt": report["analyzed_on"],
             # Store complex data as JSON strings
             "Summary": json.dumps(report["summary"]),
-            "ColorAnalysis": json.dumps(report["analyses"]["colors"]),
-            "ObjectAnalysis": json.dumps(report["analyses"]["objects"]),
+            "ColorAnalysis": json.dumps(report["analyses"]["statistics"]),
+            "ObjectAnalysis": json.dumps(report["analyses"]["meta_data"]),
             "TextAnalysis": json.dumps(report["analyses"]["text"]),
-            "MetadataAnalysis": json.dumps(report["analyses"]["metadata"]),
+            "MetadataAnalysis": json.dumps(report["analyses"]["sensitive_data"]),
         }
 
         table_client.upsert_entity(entity)
 
-        logging.info(f"Results stored with ID: {report['id']}")
+        logging.info(f"Results Archived-  Report Id:{report['id']}")
 
         return {
             "id": report["id"],
             "fileName": report["fileName"],
             "status": "stored",
-            "analyzedAt": report["analyzedAt"],
+            "analyzed_on": report["analyzed_on"],
             "summary": report["summary"]
         }
 
