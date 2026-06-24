@@ -223,7 +223,7 @@ def get_results(req: func.HttpRequest) -> func.HttpResponse:
             # Get a specific result by ID
             try:
                 entity = table_client.get_entity(
-                    partition_key="ImageAnalysis",
+                    partition_key="PdfAnalysis",
                     row_key=result_id
                 )
 
@@ -235,10 +235,10 @@ def get_results(req: func.HttpRequest) -> func.HttpResponse:
                     "analyzedAt": entity["AnalyzedAt"],
                     "summary": json.loads(entity["Summary"]),
                     "analyses": {
-                        "colors": json.loads(entity["ColorAnalysis"]),
-                        "objects": json.loads(entity["ObjectAnalysis"]),
-                        "text": json.loads(entity["TextAnalysis"]),
-                        "metadata": json.loads(entity["MetadataAnalysis"]),
+                        "statistics": json.loads(entity["Statistics"]),
+                        "meta_data": json.loads(entity["Metadata"]),
+                        "text": json.loads(entity["Text"]),
+                        "sensitive_data": json.loads(entity["SensitiveData"]),
                     }
                 }
 
@@ -259,7 +259,7 @@ def get_results(req: func.HttpRequest) -> func.HttpResponse:
             limit = int(req.params.get("limit", "10"))
 
             entities = table_client.query_entities(
-                query_filter="PartitionKey eq 'ImageAnalysis'"
+                query_filter="PartitionKey eq 'PdfAnalysis'"
             )
 
             results = []
