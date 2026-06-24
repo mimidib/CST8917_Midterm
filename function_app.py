@@ -180,10 +180,10 @@ def store_results(report: dict):
             "AnalyzedAt": report["analyzed_on"],
             # Store complex data as JSON strings
             "Summary": json.dumps(report["summary"]),
-            "ColorAnalysis": json.dumps(report["analyses"]["statistics"]),
-            "ObjectAnalysis": json.dumps(report["analyses"]["meta_data"]),
-            "TextAnalysis": json.dumps(report["analyses"]["text"]),
-            "MetadataAnalysis": json.dumps(report["analyses"]["sensitive_data"]),
+            "Statistics": json.dumps(report["analyses"]["statistics"]),
+            "Metadata": json.dumps(report["analyses"]["meta_data"]),
+            "Text": json.dumps(report["analyses"]["text"]),
+            "SensitiveData": json.dumps(report["analyses"]["sensitive_data"]),
         }
 
         table_client.upsert_entity(entity)
