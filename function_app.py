@@ -7,7 +7,7 @@ import json
 import io                                 
 import os                                 
 import uuid                               
-from datetime import datetime             
+from datetime import datetime, timezone
 
 # *********************** Create Base App ************************** #
 app = df.DFApp(http_auth_level=func.AuthLevel.ANONYMOUS)
@@ -147,8 +147,8 @@ def generate_report(reportData: dict):
         "id": str(uuid.uuid4()),
         "fileName": filename,
         "blobPath": blob_name,
-        "analyzed_on": datetime.now(datetime.timezone.utc).isoformat(),
-        "analysis": {
+        "analyzed_on": datetime.now(timezone.utc).isoformat(),
+        "analyses": {
             "statistics": reportData["stats"],
             "metadata": reportData["metadata"],
             "text": reportData["text"],
@@ -181,7 +181,7 @@ def store_results(report: dict):
             # Store complex data as JSON strings
             "Summary": json.dumps(report["summary"]),
             "Statistics": json.dumps(report["analyses"]["statistics"]),
-            "Metadata": json.dumps(report["analyses"]["meta_data"]),
+            "Metadata": json.dumps(report["analyses"]["metadata"]),
             "Text": json.dumps(report["analyses"]["text"]),
             "SensitiveData": json.dumps(report["analyses"]["sensitive_data"]),
         }
@@ -236,7 +236,7 @@ def get_results(req: func.HttpRequest) -> func.HttpResponse:
                     "summary": json.loads(entity["Summary"]),
                     "analyses": {
                         "statistics": json.loads(entity["Statistics"]),
-                        "meta_data": json.loads(entity["Metadata"]),
+                        "metadata": json.loads(entity["Metadata"]),
                         "text": json.loads(entity["Text"]),
                         "sensitive_data": json.loads(entity["SensitiveData"]),
                     }
