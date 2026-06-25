@@ -13,7 +13,7 @@
 | Xinyi Zhao | Lab 2 base + extract_text and analyze_statistics |
 | Sara Mirzaeipouynak | Lab 2 base + deployment + recording & peer review |
 | Todd Oneil | Lab 2 base + orchestrator, blob_trigger, store and HTTP endpoint |
-| Mimi Dib | Lab 2 base + report and detect_sensitive_data |
+| Mimi Dib | Lab 2 base + report, bug fixes and detect_sensitive_data |
 
 Note: Having done Lab 2 prior to submission, our group collectively did majority of the project each ourselves, and worked together on much of the outlying parts. 
 
