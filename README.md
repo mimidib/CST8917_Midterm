@@ -1,8 +1,8 @@
 # Midterm Project — Smart PDF Analyzer with Durable Functions
 
-**Course:** CST8917 — Serverless Applications | Spring/Summer 2026
-**Project:** Smart PDF Analyzer (Fan-Out/Fan-In + Chaining)
-**Demo video:** <!-- TODO: paste YouTube link --> `<youtube-link-here>`
+**Course:** CST8917 — Serverless Applications | Spring/Summer 2026  
+**Project:** Smart PDF Analyzer (Fan-Out/Fan-In + Chaining)  
+**Demo video:** <!-- TODO: paste YouTube link --> `<youtube-link-here>`  
 
 ---
 
