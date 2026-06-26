@@ -1,0 +1,19 @@
+### Get all PDF analysis results
+
+GET http://localhost:7071/api/results
+Accept: application/json
+
+###
+
+### Get latest 5 PDF analysis results
+
+GET http://localhost:7071/api/results?limit=5
+Accept: application/json
+
+###
+
+### Get one PDF analysis result by ID
+# Replace REPLACE_WITH_RESULT_ID with an ID returned from /api/results
+
+GET http://localhost:7071/api/results/REPLACE_WITH_RESULT_ID
+Accept: application/json
