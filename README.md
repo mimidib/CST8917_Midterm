@@ -88,7 +88,7 @@ All functions live in [`function_app.py`](function_app.py).
 - **Azurite** storage emulator
 - **Azure Storage Explorer** (to create the `pdfs` container and upload test PDFs)
 - An **Azure subscription** (for deployment)
-- *Optional:* the **REST Client** VS Code extension (to run `test-function.http`)
+- *Optional:* the **REST Client** VS Code extension (to run `test_function.http`)
 
 ### Dependencies (`requirements.txt`)
 
